@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..alarms.board import SEVERITY_RANK
+
 PAGE_NAMES: tuple[str, ...] = ("overview", "records", "decisions", "cleaning")
 
 STYLE = """
@@ -100,9 +102,22 @@ def render_decisions(control_snapshot: dict[str, Any], decisions: list[dict[str,
 def render_cleaning(control_snapshot: dict[str, Any], alarms: list[dict[str, Any]]) -> str:
     cleaning = control_snapshot["cleaning"]
     rows = [{"field": key, "value": value} for key, value in sorted(cleaning.items()) if key != "history"]
+    active_alarms = sorted(
+        (
+            {
+                "code": alarm["code"],
+                "severity": alarm["severity"],
+                "occurrences": alarm.get("occurrences", 1),
+                "message": alarm["message"],
+            }
+            for alarm in alarms
+        ),
+        key=lambda row: SEVERITY_RANK[row["severity"]],
+        reverse=True,
+    )
     return _page(
         _table("cleaning section", rows)
-        + _table("active alarms", [{"code": alarm["code"], "severity": alarm["severity"], "message": alarm["message"]} for alarm in alarms])
+        + _table("active alarms", active_alarms)
     )
 
 
