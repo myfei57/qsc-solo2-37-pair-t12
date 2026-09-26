@@ -102,7 +102,7 @@ def render_cleaning(control_snapshot: dict[str, Any], alarms: list[dict[str, Any
     rows = [{"field": key, "value": value} for key, value in sorted(cleaning.items()) if key != "history"]
     return _page(
         _table("cleaning section", rows)
-        + _table("active alarms", [{"code": alarm["code"], "severity": alarm["severity"], "message": alarm["message"]} for alarm in alarms])
+        + _table("active alarms", [{"code": alarm["code"], "severity": alarm["severity"], "occurrences": alarm["occurrences"], "message": alarm["message"]} for alarm in alarms])
     )
 
 
